@@ -1,9 +1,15 @@
-export function parseTracklist(text) {
+export function parseTracklist(text, format = 'rated') {
   const tracks = [];
   const errors = [];
   text.split(/\r?\n/).forEach((raw, index) => {
     const line = raw.trim();
     if (!line) return;
+    if (format === 'titles') {
+      const title = line.replace(/^(?:\d+[.)]\s+|[•●]\s+)/, '').trim();
+      if (!title) errors.push(`Ligne ${index + 1} : titre requis.`);
+      else tracks.push({title, score: ''});
+      return;
+    }
     const match = line.match(/^(.+?)(?:\s*[—–;:\t]\s*|\s+-\s*|\s+)(-?\d+(?:[.,]\d+)?)\s*(?:\/\s*10)?\s*$/);
     if (!match) {
       errors.push(`Ligne ${index + 1} : titre et note attendus (ex. MENACE — 10).`);
@@ -18,7 +24,7 @@ export function parseTracklist(text) {
     tracks.push({title, score});
   });
   if (errors.length) throw new Error(errors.join('\n'));
-  if (!tracks.length) throw new Error('Collez au moins un morceau et sa note.');
+  if (!tracks.length) throw new Error(format === 'titles' ? 'Collez au moins un titre.' : 'Collez au moins un morceau et sa note.');
   return tracks;
 }
 

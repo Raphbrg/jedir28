@@ -1,6 +1,6 @@
 export const categories=[{score:10,label:'Exceptionnel',color:'#c6a7ff'},{score:8.5,label:'Très bon',color:'#52d9c4'},{score:7,label:'Bon',color:'#8ed36a'},{score:5,label:'Moyen',color:'#f3d163'},{score:4,label:'Médiocre',color:'#f7a052'},{score:2,label:'Mauvais',color:'#ef657d'},{score:1,label:'Inaudible',color:'#8994a7'}];
 export const ratingValue=score=>Number(String(score).replace(',','.'));
-export const category=score=>categories.reduce((best,item)=>Math.abs(item.score-ratingValue(score))<Math.abs(best.score-ratingValue(score))?item:best,categories[0]);
+export const category=score=>String(score??'').trim()===''?{score:null,label:'À noter',color:'#555463'}:categories.reduce((best,item)=>Math.abs(item.score-ratingValue(score))<Math.abs(best.score-ratingValue(score))?item:best,categories[0]);
 export const FPS=30;
 export function paginate(tracks){const pages=[];let current=[];let height=0;for(const track of tracks){const lines=Math.max(1,Math.ceil(track.title.length/31));const rowHeight=Math.max(96,lines*39+18);if(current.length&&(current.length===8||height+rowHeight>820)){pages.push(current);current=[];height=0;}current.push({...track,rowHeight});height+=rowHeight;}if(current.length)pages.push(current);return pages;}
 export function timing(input, requestedSeconds){

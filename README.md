@@ -38,3 +38,5 @@ Dans **Import rapide**, coller un morceau par ligne, par exemple `MENACE — 10`
 ## Ajuster la durée
 
 Sous l’aperçu, le réglage **Durée de la vidéo** propose un mode automatique adapté à la tracklist et un mode **Personnalisée** avec un curseur en secondes. Le rythme des morceaux change, tandis que l’intro, la révélation de la note, le Top 3 et l’outro conservent leur durée. Le minimum évolue avec le nombre de morceaux et de pages pour préserver la lisibilité. L’aperçu et le MP4 utilisent le même réglage.
+
+Le mode **Titres seuls** de l’import rapide accepte un titre par ligne sans note. Les notes importées restent vides et les pastilles sont neutres jusqu’à leur saisie manuelle. Les nombres faisant partie d’un titre (par exemple `PARTIE 2` ou `24/7`) restent dans le titre. Choisir **Titres et notes** pour conserver l’import avec notation. Toutes les notes doivent être remplies avant de générer la vidéo.
