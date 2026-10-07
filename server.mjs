@@ -1,8 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import {execFile} from 'node:child_process';
-import {promisify} from 'node:util';
-const runFile=promisify(execFile);
+import {normalizeAudio,AUDIO_MAX_BYTES} from './src/audio-server.mjs';
 import {createServer as createViteServer} from 'vite';
 import {bundle} from '@remotion/bundler';
 import {selectComposition,renderMedia} from '@remotion/renderer';
@@ -15,14 +13,15 @@ const root=path.dirname(new URL(import.meta.url).pathname);
 const app=express();app.use(express.json({limit:'80mb'}));
 await fs.mkdir(path.join(root,'exports'),{recursive:true});
 const audioDir=path.join(root,'exports','audio');await fs.mkdir(audioDir,{recursive:true});
-const audioUpload=multer({storage:multer.diskStorage({destination:audioDir,filename:(_,file,cb)=>cb(null,randomUUID())}),limits:{fileSize:20*1024*1024}}).single('audio');
+const audioUpload=multer({storage:multer.diskStorage({destination:audioDir,filename:(_,file,cb)=>cb(null,randomUUID())}),limits:{fileSize:AUDIO_MAX_BYTES}}).single('audio');
 app.post('/api/audio',(req,res)=>audioUpload(req,res,async error=>{
- if(error)return res.status(400).json({error:'Fichier audio limité à 20 Mo.'});
+ if(error){console.error('Import audio:',error.message);return res.status(400).json({error:error.code==='LIMIT_FILE_SIZE'?'Fichier trop volumineux : 100 Mo maximum.':'L’import audio a échoué. Réessayez avec un seul fichier.'});}
  if(!req.file)return res.status(400).json({error:'Choisissez un fichier audio.'});
- try{const {stdout}=await runFile('ffprobe',['-v','error','-show_entries','format=duration:stream=codec_type','-of','json',req.file.path]);const probe=JSON.parse(stdout);const duration=Number(probe.format.duration);if(!probe.streams.some(s=>s.codec_type==='audio')||probe.streams.some(s=>s.codec_type==='video')||!Number.isFinite(duration)||duration<=0)throw Error('Audio invalide');res.json({url:'/api/audio/'+req.file.filename,duration});}
- catch{await fs.unlink(req.file.path).catch(()=>{});res.status(400).json({error:'Audio illisible. Utilisez un fichier MP3, WAV ou M4A.'});}
+ try{const duration=await normalizeAudio(req.file.path,req.file.path+'.mp3');res.json({url:'/api/audio/'+req.file.filename,duration});}
+ catch(error){console.error('Import audio:',error.message);res.status(400).json({error:error.message});}
+ finally{await fs.unlink(req.file.path).catch(()=>{});}
 }));
-app.get('/api/audio/:id',(req,res)=>{if(!/^[a-f0-9-]{36}$/.test(req.params.id))return res.sendStatus(404);res.sendFile(path.join(audioDir,req.params.id));});
+app.get('/api/audio/:id',async(req,res)=>{if(!/^[a-f0-9-]{36}$/.test(req.params.id))return res.sendStatus(404);const file=path.join(audioDir,req.params.id);try{await fs.access(file+'.mp3');res.type('audio/mpeg');res.sendFile(file+'.mp3');}catch{res.sendFile(file);}});
 const jobs=new Map();let active=false;
 function renderHandler(compositionId,validateData,downloadName){return async(req,res)=>{
  try{validateData(req.body);}catch(e){return res.status(400).json({error:e.message});}

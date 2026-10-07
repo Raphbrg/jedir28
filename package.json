@@ -15,12 +15,14 @@
     "@remotion/bundler": "4.0.400",
     "@remotion/player": "4.0.400",
     "@remotion/renderer": "4.0.400",
-    "remotion": "4.0.400",
+    "express": "5.1.0",
+    "ffmpeg-static": "5.2.0",
+    "ffprobe-static": "3.1.0",
+    "multer": "2.0.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "vite": "6.3.5",
-    "express": "5.1.0",
-    "multer": "2.0.2"
+    "remotion": "4.0.400",
+    "vite": "6.3.5"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1"
