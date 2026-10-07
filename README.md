@@ -43,6 +43,10 @@ Le mode **Titres seuls** de l’import rapide accepte un titre par ligne sans no
 
 ## Bilan final et format court
 
-La vidéo se termine par une carte récapitulative de 5 secondes par défaut : pochette, artiste, album, note globale, toute la tracklist avec notes et pastilles, puis Top 3. La liste passe en colonnes pour les albums longs. En mode Personnalisée, le minimum est abaissé (13 secondes pour 3 morceaux, 17 secondes pour 20 morceaux courts avec un bilan de 5 secondes) ; l’animation accélère et les étapes se raccourcissent automatiquement. Pour les listes exceptionnellement longues, vérifier la lisibilité du bilan dans l’aperçu.
+La vidéo se termine par une carte récapitulative de 5 secondes par défaut : pochette, artiste, album, note globale, toute la tracklist avec notes et pastilles, puis Top 3. La liste passe en colonnes pour les albums longs. En mode Personnalisée, le minimum est abaissé (14 secondes pour 3 morceaux, 21 secondes pour 20 morceaux courts avec un bilan de 5 secondes) ; l’animation accélère et les étapes se raccourcissent automatiquement. Pour les listes exceptionnellement longues, vérifier la lisibilité du bilan dans l’aperçu.
 
 Le réglage **Durée du bilan final** permet de conserver l’écran récapitulatif entre 3 et 15 secondes (5 par défaut), indépendamment du rythme des titres. La durée totale et son minimum prennent ce réglage en compte. La note globale est aussi convertie en étoiles sur 5, arrondies à la demi-étoile la plus proche : `8,6/10 → 4,5/5`, `8,1/10 → 4/5`, `10/10 → 5/5`. Les demi-étoiles sont remplies à moitié. Les pages de défilement contiennent jusqu’à 12 titres courts, avec une pagination plus aérée pour les titres longs.
+
+## Transitions
+
+La pochette principale passe progressivement de 390 à 310 pixels entre la note globale et le Top 3, puis se déplace vers son emplacement du bilan final. Une seule pochette au premier plan reste montée pendant tout le rendu. Les phases et pages s’enchaînent avec des fondus de 0,8 à 1 seconde et des mouvements amortis. Le minimum des vidéos courtes conserve davantage de temps pour les titres. Les étoiles remplies et demi-étoiles sont toujours jaunes ; aucun nombre sur 5 n’est affiché à côté, et la note originale sur 10 reste visible.

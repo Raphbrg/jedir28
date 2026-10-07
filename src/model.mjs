@@ -10,7 +10,7 @@ export function timing(input, requestedSeconds, endScreenSeconds=5){
   let introEnd=90, resultLength=85, topLength=145, pageHold=45;
   const summaryLength=Math.round(Math.max(3,Math.min(15,Number(endScreenSeconds)||5))*FPS);
   const automaticDuration=320+summaryLength+count*step+pages.length*45;
-  const compactMinimum=205+summaryLength+count*6+pages.length*15;
+  const compactMinimum=205+summaryLength+count*10+pages.length*24;
   const minSeconds=Math.ceil(compactMinimum/FPS);
   const maxSeconds=Math.max(180,Math.ceil(automaticDuration/FPS*3));
   if(count && requestedSeconds!=null && requestedSeconds!=='' && Number.isFinite(Number(requestedSeconds))){
