@@ -30,3 +30,7 @@ Le build désactive le tree-shaking Rollup pour éviter un coût de compilation 
 ## Utiliser sans installation avec GitHub Codespaces
 
 Après publication des fichiers sur GitHub, ouvrir le dépôt, choisir **Code → Codespaces → Create codespace on main**. La configuration `.devcontainer` installe Node.js, Chromium et FFmpeg, installe les dépendances et démarre automatiquement Album Studio. L’aperçu du port 3000 s’ouvre dans le navigateur. Si ce n’est pas le cas, ouvrir l’onglet **Ports**, puis utiliser l’icône **Open in Browser** du port 3000. Garder le Codespace actif pendant les exports. L’aperçu est accessible au propriétaire du Codespace avec son compte GitHub ; GitHub Pages ne peut pas héberger le serveur de rendu vidéo.
+
+## Import rapide de tracklist
+
+Dans **Import rapide**, coller un morceau par ligne, par exemple `MENACE — 10`, `DÉCONNECTÉ — 9` ou `RYUK — 9,5/10`, puis cliquer **Importer la tracklist**. Les séparateurs tiret, tabulation, deux-points, point-virgule et espace sont acceptés. Les listes numérotées `1.` / `1)` sont acceptées. Choisir **Ajouter** pour compléter la liste ou **Remplacer** pour la refaire. En cas de ligne invalide, aucune modification n’est appliquée et le numéro de ligne est indiqué. Le remplacement conserve les sélections Top 3 des titres identiques.
