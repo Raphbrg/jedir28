@@ -71,3 +71,6 @@ npm run test:top:video
 ```
 
 L’API `POST /api/top/render` crée un export LE TOP ; les endpoints de progression et téléchargement restent `/api/jobs/:id` et `/api/download/:id`. Le bilan de classements exceptionnellement longs doit être contrôlé dans l’aperçu pour la lisibilité.
+
+### Audio dans LE TOP
+Chaque titre peut recevoir un fichier MP3, WAV ou M4A (20 Mo maximum) et un point de départ en secondes. L’extrait joue pendant la révélation de sa pochette, avec des fondus ; un extrait trop court se termine sans boucle. Le bilan final reste silencieux. Les fichiers audio sont stockés localement dans `exports/audio/`, nécessaire à l’aperçu et au rendu ; le dossier `exports/` peut être purgé lorsque les projets ne sont plus utilisés. FFprobe valide les fichiers importés. Les liens Apple Music et TikTok ne sont pas des imports audio : pour utiliser la bibliothèque TikTok, exportez sans audio puis choisissez la musique au moment de publier.
