@@ -1,0 +1,11 @@
+{
+  "name": "Album Studio",
+  "build": { "dockerfile": "Dockerfile" },
+  "remoteUser": "node",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Album Studio", "onAutoForward": "openBrowser" }
+  },
+  "postCreateCommand": "npm ci",
+  "postStartCommand": "bash .devcontainer/start.sh"
+}
