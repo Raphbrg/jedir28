@@ -21,7 +21,7 @@ NODE_ENV=production npm run dev
 ```
 
 ## Animation et notation
-Une seule image de fond en mode cover, centrée, floutée et assombrie, et une pochette carrée distincte au premier plan. Zoom du fond continu. Intro 3 s ; tracklist paginée par 8 titres maximum, avec moins de lignes pour les titres longs avec révélations de 0,73 à 1,07 s selon le nombre de titres, puis pause de 1,5 s par page ; note globale 2,83 s ; Top 3 successif ; bilan final 2 s. Les notes utilisent le palier numériquement le plus proche ; en cas d’égalité, le meilleur palier gagne. Titres conservés tels que saisis. Les titres longs passent sur plusieurs lignes et disposent de davantage de hauteur. Les notes peuvent être saisies avec une virgule ou un point.
+Une seule image de fond en mode cover, centrée, floutée et assombrie, et une pochette carrée distincte au premier plan. Zoom du fond continu. Intro 3 s ; tracklist paginée par 12 titres courts maximum, avec moins de lignes pour les titres longs avec révélations de 0,73 à 1,07 s selon le nombre de titres, puis pause de 1,5 s par page ; note globale 2,83 s ; Top 3 successif ; bilan final 5 s par défaut. Les notes utilisent le palier numériquement le plus proche ; en cas d’égalité, le meilleur palier gagne. Titres conservés tels que saisis. Les titres longs passent sur plusieurs lignes et disposent de davantage de hauteur. Les notes peuvent être saisies avec une virgule ou un point.
 
 Export unique à la fois, progression interrogée chaque seconde. Les travaux sont conservés en mémoire du serveur : un redémarrage interrompt leur suivi. Le formulaire reste dans la session du navigateur et n’est pas sauvegardé automatiquement. Le serveur est conçu pour une machine locale de confiance, pas pour un déploiement public.
 
@@ -37,10 +37,12 @@ Dans **Import rapide**, coller un morceau par ligne, par exemple `MENACE — 10`
 
 ## Ajuster la durée
 
-Sous l’aperçu, le réglage **Durée de la vidéo** propose un mode automatique adapté à la tracklist et un mode **Personnalisée** avec un curseur en secondes. Pour les durées courtes, le rythme des morceaux accélère et les étapes intro/note/Top 3 sont raccourcies. Le bilan final reste affiché 2 secondes. Le minimum évolue avec le nombre de morceaux et de pages pour préserver la lisibilité. L’aperçu et le MP4 utilisent le même réglage.
+Sous l’aperçu, le réglage **Durée de la vidéo** propose un mode automatique adapté à la tracklist et un mode **Personnalisée** avec un curseur en secondes. Pour les durées courtes, le rythme des morceaux accélère et les étapes intro/note/Top 3 sont raccourcies. Le bilan final reste affiché 5 secondes par défaut. Le minimum évolue avec le nombre de morceaux et de pages pour préserver la lisibilité. L’aperçu et le MP4 utilisent le même réglage.
 
 Le mode **Titres seuls** de l’import rapide accepte un titre par ligne sans note. Les notes importées restent vides et les pastilles sont neutres jusqu’à leur saisie manuelle. Les nombres faisant partie d’un titre (par exemple `PARTIE 2` ou `24/7`) restent dans le titre. Choisir **Titres et notes** pour conserver l’import avec notation. Toutes les notes doivent être remplies avant de générer la vidéo.
 
 ## Bilan final et format court
 
-La vidéo se termine par une carte récapitulative de 2 secondes : pochette, artiste, album, note globale, toute la tracklist avec notes et pastilles, puis Top 3. La liste passe en colonnes pour les albums longs. En mode Personnalisée, le minimum est abaissé (10 secondes pour 3 morceaux, 15 secondes pour 20 morceaux courts) ; l’animation accélère et les étapes se raccourcissent automatiquement. Pour les listes exceptionnellement longues, vérifier la lisibilité du bilan dans l’aperçu.
+La vidéo se termine par une carte récapitulative de 5 secondes par défaut : pochette, artiste, album, note globale, toute la tracklist avec notes et pastilles, puis Top 3. La liste passe en colonnes pour les albums longs. En mode Personnalisée, le minimum est abaissé (13 secondes pour 3 morceaux, 17 secondes pour 20 morceaux courts avec un bilan de 5 secondes) ; l’animation accélère et les étapes se raccourcissent automatiquement. Pour les listes exceptionnellement longues, vérifier la lisibilité du bilan dans l’aperçu.
+
+Le réglage **Durée du bilan final** permet de conserver l’écran récapitulatif entre 3 et 15 secondes (5 par défaut), indépendamment du rythme des titres. La durée totale et son minimum prennent ce réglage en compte. La note globale est aussi convertie en étoiles sur 5, arrondies à la demi-étoile la plus proche : `8,6/10 → 4,5/5`, `8,1/10 → 4/5`, `10/10 → 5/5`. Les demi-étoiles sont remplies à moitié. Les pages de défilement contiennent jusqu’à 12 titres courts, avec une pagination plus aérée pour les titres longs.
