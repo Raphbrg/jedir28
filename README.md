@@ -1,4 +1,4 @@
-# Album Studio
+# Studios vidéo : Album Studio & LE TOP
 Application locale React + Remotion pour créer des vidéos de notation d’albums, MP4 H.264 1080 × 1920, 30 FPS. Serveur Express pour le rendu, aperçu Remotion Player utilisant la même composition.
 
 ## Démarrer
@@ -50,3 +50,24 @@ Le réglage **Durée du bilan final** permet de conserver l’écran récapitula
 ## Transitions
 
 La pochette principale passe progressivement de 390 à 310 pixels entre la note globale et le Top 3, puis se déplace vers son emplacement du bilan final. Une seule pochette au premier plan reste montée pendant tout le rendu. Les phases et pages s’enchaînent avec des fondus de 0,8 à 1 seconde et des mouvements amortis. Le minimum des vidéos courtes conserve davantage de temps pour les titres. Les étoiles remplies et demi-étoiles sont toujours jaunes ; aucun nombre sur 5 n’est affiché à côté, et la note originale sur 10 reste visible.
+
+## Deuxième application : LE TOP
+
+Ouvrir `/le-top.html` (ou cliquer **LE TOP** dans l’en-tête d’Album Studio). Le même serveur sur le port 3000 sert deux interfaces et deux compositions Remotion distinctes.
+
+- Importer une photo d’artiste pour le fond, assombri et légèrement flouté avec zoom continu.
+- Donner un nom au classement. Chaque entrée contient une pochette carrée, un titre et un artiste.
+- Saisir le meilleur titre en première position ; les flèches changent le classement. La révélation par défaut va du dernier au n°1. Le bilan final conserve l’ordre du n°1 au dernier.
+- **Import rapide** accepte `Titre — Artiste` (un par ligne) et l’import de plusieurs pochettes en une sélection. Le nom de fichier préremplit le titre ; l’artiste reste à compléter. Les imports sont locaux, PNG/JPEG/WebP, 10 Mo maximum par image.
+- L’aperçu et le bilan utilisent la même composition que l’export. **Voir le bilan** permet de contrôler immédiatement le classement avec les petites pochettes.
+- Durée automatique : intro 2 secondes, 3 secondes par titre, puis bilan de 5 secondes. Durée totale personnalisable, avec au moins 2 secondes par titre. Le bilan se règle indépendamment de 3 à 15 secondes. Le n°1 bénéficie d’une animation et d’une couleur de rang plus marquées.
+- Export MP4 H.264, 1080 × 1920, 30 FPS. Un export à la fois pour les deux applications. Pas de piste musicale ajoutée. Le formulaire reste dans la session du navigateur.
+
+```sh
+# Serveur démarré pour le test du formulaire et du véritable MP4 :
+npm run test:top:browser
+# Images du décompte, du n°1 et du bilan pour 3 et 20 titres :
+npm run test:top:video
+```
+
+L’API `POST /api/top/render` crée un export LE TOP ; les endpoints de progression et téléchargement restent `/api/jobs/:id` et `/api/download/:id`. Le bilan de classements exceptionnellement longs doit être contrôlé dans l’aperçu pour la lisibilité.
