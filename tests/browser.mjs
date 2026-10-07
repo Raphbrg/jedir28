@@ -1,6 +1,7 @@
 import {chromium} from '@playwright/test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
 const page=await browser.newPage({viewport:{width:1440,height:1100}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
 await page.goto('http://localhost:3000');await page.getByRole('button',{name:'GÉNÉRER LA VIDÉO'}).click();await page.getByRole('alert').waitFor();
@@ -12,6 +13,7 @@ for(const [i,title,score] of [[2,'DÉCONNECTÉ','9'],[3,'RYUK','9.5']]){await pa
 const selects=page.locator('.top-fields select');for(let i=0;i<3;i++){const value=await selects.nth(i).locator('option').nth(i+1).getAttribute('value');await selects.nth(i).selectOption(value);}
 await page.getByRole('button',{name:'Descendre 1',exact:true}).click();assert.equal(await page.getByLabel('Titre 1',{exact:true}).inputValue(),'DÉCONNECTÉ');await page.getByRole('button',{name:'Monter 2',exact:true}).click();
 await page.getByRole('button',{name:/APERÇU/}).click();await page.waitForTimeout(4300);await page.screenshot({path:'/tmp/album-studio-desktop.png',fullPage:true});
-await page.getByRole('button',{name:'GÉNÉRER LA VIDÉO'}).click();await page.getByRole('link',{name:'TÉLÉCHARGER MP4'}).waitFor({timeout:240000});const url=await page.getByRole('link',{name:'TÉLÉCHARGER MP4'}).getAttribute('href');const response=await page.request.get('http://localhost:3000'+url);assert.equal(response.status(),200);await fs.writeFile('/tmp/album-studio-test.mp4',await response.body());
+await page.getByLabel('DURÉE DE LA VIDÉO').selectOption('manual');const slider=page.getByLabel('Ajuster la durée en secondes');await slider.press('Home');await slider.press('ArrowRight');await slider.press('ArrowRight');assert.equal(await page.locator('.duration-title strong').textContent(),'18,0 s');
+await page.getByRole('button',{name:'GÉNÉRER LA VIDÉO'}).click();await page.getByRole('link',{name:'TÉLÉCHARGER MP4'}).waitFor({timeout:240000});const url=await page.getByRole('link',{name:'TÉLÉCHARGER MP4'}).getAttribute('href');const response=await page.request.get('http://localhost:3000'+url);assert.equal(response.status(),200);await fs.writeFile('/tmp/album-studio-test.mp4',await response.body());const metadata=JSON.parse(execFileSync('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height,nb_frames,r_frame_rate','-of','json','/tmp/album-studio-test.mp4'],{encoding:'utf8'}));assert.equal(metadata.streams[0].nb_frames,'540');assert.equal(metadata.streams[0].width,1080);assert.equal(metadata.streams[0].height,1920);assert.equal(metadata.streams[0].r_frame_rate,'30/1');
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/album-studio-mobile.png',fullPage:true});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
-assert.deepEqual(errors,[]);console.log('UI, upload, validation, reorder, preview, mobile and real MP4 download: PASS');await browser.close();
+assert.deepEqual(errors,[]);console.log('UI, upload, validation, reorder, preview, mobile and real MP4 download at custom 18-second duration: PASS');await browser.close();

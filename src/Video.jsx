@@ -3,7 +3,7 @@ import {AbsoluteFill,Img,useCurrentFrame,interpolate} from 'remotion';
 import {categories,category,timing} from './model.mjs';
 const fade=(f,start,length=16)=>interpolate(f,[start,start+length],[0,1],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
 const format=n=>String(n).replace('.',',');
-export function AlbumVideo({data}){const f=useCurrentFrame();const t=timing(data.tracks);const isTracks=f>=90&&f<t.tracksEnd;const isResult=f>=t.tracksEnd&&f<t.resultEnd;const isTop=f>=t.resultEnd;const page=Math.max(0,t.pageStarts.findLastIndex(start=>f>=start));const start=t.pageStarts[page]||90;const visible=t.pages[page]||[];const scale=interpolate(f,[0,t.duration],[1.07,1.14]);return <AbsoluteFill style={{background:'#101015',color:'#f6f4fa',fontFamily:'Arial, sans-serif',overflow:'hidden'}}>
+export function AlbumVideo({data}){const f=useCurrentFrame();const t=timing(data.tracks,data.durationSeconds);const isTracks=f>=90&&f<t.tracksEnd;const isResult=f>=t.tracksEnd&&f<t.resultEnd;const isTop=f>=t.resultEnd;const page=Math.max(0,t.pageStarts.findLastIndex(start=>f>=start));const start=t.pageStarts[page]||90;const visible=t.pages[page]||[];const scale=interpolate(f,[0,t.duration],[1.07,1.14]);return <AbsoluteFill style={{background:'#101015',color:'#f6f4fa',fontFamily:'Arial, sans-serif',overflow:'hidden'}}>
 {data.cover&&<Img src={data.cover} style={{position:'absolute',width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',filter:'blur(16px)',transform:`scale(${scale})`}}/>}
 <AbsoluteFill style={{background:'linear-gradient(180deg,rgba(8,8,14,.65),rgba(8,8,14,.88) 70%,rgba(8,8,14,.96))'}}/>
 <div style={{position:'absolute',top:105,left:80,fontSize:24,letterSpacing:8,color:'#b4afb9'}}>ALBUM / REVIEW</div>
