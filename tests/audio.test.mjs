@@ -6,7 +6,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import ffmpeg from 'ffmpeg-static';
 import ffprobe from 'ffprobe-static';
-import {normalizeAudio} from '../src/audio-server.mjs';
+import {normalizeAudio,audioFileName} from '../src/audio-server.mjs';
 test('Bundled engines normalize WAV, M4A, FLAC and MP3 with embedded artwork; invalid files give useful errors',async()=>{
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'audio-import-'));
  const run=args=>execFileSync(ffmpeg,['-nostdin','-y','-v','error',...args]);
@@ -25,3 +25,5 @@ test('Bundled engines normalize WAV, M4A, FLAC and MP3 with embedded artwork; in
   const invalid=path.join(dir,'not-audio.mp3');await fs.writeFile(invalid,'not an audio');await assert.rejects(normalizeAudio(invalid,path.join(dir,'bad.mp3')),/Aucune piste audio lisible/);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
+
+test('Audio library preserves accented and Unicode filenames from multipart uploads',()=>{assert.equal(audioFileName(Buffer.from('ÉTÉ — 日本.wav','utf8').toString('latin1')),'ÉTÉ — 日本.wav');assert.equal(audioFileName('日本.wav'),'日本.wav');assert.equal(audioFileName('sample.mp3'),'sample.mp3');});

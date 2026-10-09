@@ -9,7 +9,9 @@
     "test:browser": "node tests/browser.mjs",
     "test:video": "node tests/video.mjs",
     "test:top:browser": "node tests/top-browser.mjs",
-    "test:top:video": "node tests/top-video.mjs"
+    "test:top:video": "node tests/top-video.mjs",
+    "test:top:audio": "node tests/top-audio-browser.mjs",
+    "test:discovery:browser": "node tests/discovery-browser.mjs"
   },
   "dependencies": {
     "@remotion/bundler": "4.0.400",

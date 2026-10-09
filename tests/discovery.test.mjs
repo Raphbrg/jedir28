@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {discoveryFrames,validateDiscovery} from '../src/discovery/model.mjs';
+const data={heading:'La découverte',title:'ÉTÉ',artist:'Artiste',cover:'data:image/jpeg;base64,eA==',durationSeconds:12,audioVolume:100};
+test('Discovery export validates metadata, duration and optional uploaded audio',()=>{assert.doesNotThrow(()=>validateDiscovery(data));assert.equal(discoveryFrames(data),360);assert.equal(discoveryFrames({...data,durationSeconds:3}),90);assert.throws(()=>validateDiscovery({...data,cover:''}),/pochette/);assert.throws(()=>validateDiscovery({...data,title:''}),/titre du morceau/);assert.throws(()=>validateDiscovery({...data,durationSeconds:1}),/durée/);assert.throws(()=>validateDiscovery({...data,audio:'https://example.com/song.mp3'}),/Audio/);assert.throws(()=>validateDiscovery({...data,audioVolume:101}),/volume/);});

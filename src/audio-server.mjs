@@ -25,3 +25,9 @@ export async function normalizeAudio(input,output){
  }
  return duration;
 }
+
+export function audioFileName(name){
+ if([...name].some(char=>char.codePointAt(0)>255))return name.slice(0,200);
+ const decoded=Buffer.from(name,'latin1').toString('utf8');
+ return (decoded.includes('\uFFFD')?name:decoded).slice(0,200);
+}
