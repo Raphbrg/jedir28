@@ -8,6 +8,8 @@ const format=n=>String(n).replace('.',',');
 export function AlbumVideo({data}){const f=useCurrentFrame();const t=timing(data.tracks,data.durationSeconds,data.endScreenSeconds);const cover=coverPose(f,t);const tracksOpacity=phaseOpacity(f,t.introEnd,t.tracksEnd);const resultOpacity=phaseOpacity(f,t.tracksEnd,t.resultEnd);const topOpacity=phaseOpacity(f,t.resultEnd,t.topEnd);const scale=interpolate(f,[0,t.duration],[1.07,1.14]);return <AbsoluteFill style={{background:'#101015',color:'#f6f4fa',fontFamily:'Arial, sans-serif',overflow:'hidden'}}>
 {data.cover&&<Img src={data.cover} style={{position:'absolute',width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',filter:'blur(16px)',transform:`scale(${scale})`}}/>}
 <AbsoluteFill style={{background:'linear-gradient(180deg,rgba(8,8,14,.65),rgba(8,8,14,.88) 70%,rgba(8,8,14,.96))'}}/>
+{/* Keep the complete review in the area above captions and left of social action buttons. */}
+<AbsoluteFill style={{left:48,top:100,transform:'scale(.8)',transformOrigin:'top left'}}>
 <div style={{position:'absolute',top:105,left:80,fontSize:24,letterSpacing:8,color:'#b4afb9'}}>ALBUM / REVIEW</div>
 {data.cover&&<Img src={data.cover} data-testid="foreground-cover" style={{position:'absolute',left:cover.left,top:cover.top,width:cover.size,height:cover.size,objectFit:'cover',boxShadow:'0 25px 70px #0008',borderRadius:8,opacity:fade(f,5,24),transform:`scale(${.94+.06*fade(f,5,30)})`}}/>}
 {cover.recap<1&&<div style={{position:'absolute',top:190,width:'100%',textAlign:'center',opacity:fade(f,5,24)*(1-cover.recap)}}><div style={{height:390-80*fade(f,t.resultEnd-18,36)}}/>
@@ -18,7 +20,7 @@ export function AlbumVideo({data}){const f=useCurrentFrame();const t=timing(data
 {resultOpacity>0&&<div style={{position:'absolute',top:1000,width:'100%',textAlign:'center',opacity:resultOpacity,transform:`translateY(${(1-fade(f,t.tracksEnd-12,24))*15}px)`}}><div style={{fontSize:25,letterSpacing:7,color:'#aaa0b6'}}>NOTE GLOBALE</div><div style={{fontSize:185,fontWeight:700,color:category(data.score).color,marginTop:35}}>{format(data.score)}<span style={{fontSize:55}}>/10</span></div><Stars score={data.score} size={56}/></div>}
 {topOpacity>0&&<div style={{position:'absolute',top:820,width:'100%',textAlign:'center',opacity:topOpacity}}><div style={{fontSize:26,letterSpacing:8,color:'#b8adca'}}>TOP 3</div>{data.top.map((id,i)=>{const track=data.tracks.find(x=>x.id===id);const a=fade(f,t.resultEnd+20+i*30,22);return <div key={i} style={{margin:'40px 65px',opacity:a,transform:`scale(${i===0?.95+.05*a:.98+.02*a})`,color:i===0?'#e1d0ff':'#e6e1ec',fontSize:track?.title.length>70?(i===0?32:28):(i===0?53:39),fontWeight:i===0?700:400,overflowWrap:'anywhere'}}><div style={{fontSize:20,color:'#9c8cae',marginBottom:12}}>0{i+1}</div>{track?.title||'—'}</div>})}</div>}
 {cover.recap>0&&<Summary data={data} opacity={cover.recap}/>}
-
+</AbsoluteFill>
 </AbsoluteFill>}
 
 function Summary({data,opacity}){
