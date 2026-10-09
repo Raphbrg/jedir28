@@ -8,8 +8,8 @@ const format=n=>String(n).replace('.',',');
 export function AlbumVideo({data}){const f=useCurrentFrame();const t=timing(data.tracks,data.durationSeconds,data.endScreenSeconds);const cover=coverPose(f,t);const tracksOpacity=phaseOpacity(f,t.introEnd,t.tracksEnd);const resultOpacity=phaseOpacity(f,t.tracksEnd,t.resultEnd);const topOpacity=phaseOpacity(f,t.resultEnd,t.topEnd);const scale=interpolate(f,[0,t.duration],[1.07,1.14]);return <AbsoluteFill style={{background:'#101015',color:'#f6f4fa',fontFamily:'Arial, sans-serif',overflow:'hidden'}}>
 {data.cover&&<Img src={data.cover} style={{position:'absolute',width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',filter:'blur(16px)',transform:`scale(${scale})`}}/>}
 <AbsoluteFill style={{background:'linear-gradient(180deg,rgba(8,8,14,.65),rgba(8,8,14,.88) 70%,rgba(8,8,14,.96))'}}/>
-{/* Keep the complete review in the area above captions and left of social action buttons. */}
-<AbsoluteFill style={{left:48,top:100,transform:'scale(.8)',transformOrigin:'top left'}}>
+{/* Center the review horizontally, with inset margins for social controls and captions. */}
+<AbsoluteFill style={{left:108,top:100,transform:'scale(.8)',transformOrigin:'top left'}}>
 <div style={{position:'absolute',top:105,left:80,fontSize:24,letterSpacing:8,color:'#b4afb9'}}>ALBUM / REVIEW</div>
 {data.cover&&<Img src={data.cover} data-testid="foreground-cover" style={{position:'absolute',left:cover.left,top:cover.top,width:cover.size,height:cover.size,objectFit:'cover',boxShadow:'0 25px 70px #0008',borderRadius:8,opacity:fade(f,5,24),transform:`scale(${.94+.06*fade(f,5,30)})`}}/>}
 {cover.recap<1&&<div style={{position:'absolute',top:190,width:'100%',textAlign:'center',opacity:fade(f,5,24)*(1-cover.recap)}}><div style={{height:390-80*fade(f,t.resultEnd-18,36)}}/>
