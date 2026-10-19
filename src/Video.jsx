@@ -5,7 +5,6 @@ import {AbsoluteFill,Img,useCurrentFrame,interpolate} from 'remotion';
 import {categories,category,timing} from './model.mjs';
 const fade=smoothProgress;
 const format=n=>String(n).replace('.',',');
-const safeScore=n=>Number(String(n??'').replace(',','.'));
 function ScoreDot({score,size=48}){const color=category(score).color;return <span aria-label={`Note ${format(score)} sur 10`} title={`${format(score)}/10`} style={{width:size,height:size,minWidth:size,borderRadius:'50%',background:color,display:'inline-block',flexShrink:0,border:'5px solid #ffffff75',boxShadow:`0 0 0 5px #0005,0 0 28px ${color}88`}}/>;}
 const topSizes=[{font:74,dot:74,pad:34},{font:61,dot:62,pad:29},{font:51,dot:54,pad:25}];
 export function AlbumVideo({data}){const f=useCurrentFrame();const t=timing(data.tracks,data.durationSeconds,data.endScreenSeconds);const cover=coverPose(f,t);const tracksOpacity=phaseOpacity(f,t.introEnd,t.tracksEnd);const resultOpacity=phaseOpacity(f,t.tracksEnd,t.resultEnd);const topOpacity=phaseOpacity(f,t.resultEnd,t.topEnd);const scale=interpolate(f,[0,t.duration],[1.07,1.14]);return <AbsoluteFill style={{background:'#101015',color:'#f6f4fa',fontFamily:'Arial, sans-serif',overflow:'hidden'}}>
