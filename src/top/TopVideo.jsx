@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill,Img,Audio,Sequence,useCurrentFrame,interpolate} from 'remotion';
 import {smoothProgress,phaseOpacity} from '../motion.mjs';
-import {orderedEntries,topTiming,audioVolume,audioLevel} from './model.mjs';
+import {orderedEntries,topTiming,audioVolume,audioLevel,topAudioSegments} from './model.mjs';
 export function TopVideo({data}){
  const frame=useCurrentFrame();const t=topTiming(data);const entries=orderedEntries(data);const recap=smoothProgress(frame,t.summaryStart-15,30);const zoom=interpolate(frame,[0,t.duration],[1.05,1.13]);
  return <AbsoluteFill style={{fontFamily:'Arial, sans-serif',background:'#0e0d14',color:'#f5efff'}}>
@@ -9,7 +9,7 @@ export function TopVideo({data}){
  <AbsoluteFill style={{background:'linear-gradient(180deg,#080812aa,#080812cc 45%,#080812ee)'}}/>
  {frame<t.introEnd+12&&<div style={{position:'absolute',top:280,left:120,right:120,textAlign:'center',opacity:smoothProgress(frame,0,18)*(1-smoothProgress(frame,t.introEnd-12,24)),transform:`translateY(${(1-smoothProgress(frame,0,24))*12}px)`}}>{data.background&&<Img src={data.background} style={{width:620,height:760,objectFit:'cover',objectPosition:'center',borderRadius:10,boxShadow:'0 30px 80px #0008'}}/>}<div style={{fontSize:data.name?.length>100?38:data.name?.length>50?54:76,fontWeight:700,lineHeight:1.15,marginTop:60,overflowWrap:'anywhere'}}>{data.name||'Mon top'}</div></div>}
  {recap<1&&entries.map((entry,i)=>{const start=t.introEnd+i*t.itemFrames;const end=start+t.itemFrames;const opacity=phaseOpacity(frame,start,Infinity,24)*(1-smoothProgress(frame,end-12,24))*(1-recap);if(opacity<=0)return null;const entrance=smoothProgress(frame,start-12,36);const scale=(entry.rank===1?.95:.98)+(entry.rank===1?.05:.02)*entrance;return <div key={entry.id} style={{position:'absolute',top:310,left:80,right:80,textAlign:'center',opacity,transform:`translateY(${(1-entrance)*14}px)`}}><div style={{fontSize:27,letterSpacing:5,color:entry.rank===1?'#f5c84c':'#c4aedf'}}>N° {String(entry.rank).padStart(2,'0')}</div>{entry.cover?<Img src={entry.cover} style={{width:650,height:650,objectFit:'cover',borderRadius:10,marginTop:38,boxShadow:'0 30px 80px #0008',transform:`scale(${scale})`}}/>:<div style={{width:650,height:650,background:'#24202c',margin:'38px auto 0',borderRadius:10}}/>}<div style={{fontSize:entry.title.length>60?48:76,fontWeight:700,lineHeight:1.14,marginTop:60,overflowWrap:'anywhere'}}>{entry.title||'Titre du morceau'}</div><div style={{fontSize:46,color:'#cbbad9',marginTop:25,overflowWrap:'anywhere'}}>{entry.artist||'Artiste'}</div></div>})}
- {entries.map((entry,i)=>{if(!entry.audio)return null;const from=Math.round(t.introEnd+i*t.itemFrames);const length=Math.round(t.introEnd+(i+1)*t.itemFrames)-from;const available=Math.max(1,Math.floor((entry.audioDuration-entry.audioStart)*30));const duration=Math.min(length,available);return <Sequence key={`audio-${entry.id}`} from={from} durationInFrames={duration}><Audio src={entry.audio} startFrom={Math.round(entry.audioStart*30)} volume={f=>audioLevel(data,entry)*audioVolume(f,duration)}/></Sequence>;})}
+ {topAudioSegments(data).map(({entry,from,startFrom,duration})=><Sequence key={`audio-${entry.id}-${from}`} from={from} durationInFrames={duration}><Audio src={entry.audio} startFrom={startFrom} volume={f=>audioLevel(data,entry)*audioVolume(f,duration)}/></Sequence>)}
  {recap>0&&<TopSummary data={data} opacity={recap}/>}
  </AbsoluteFill>;
 }

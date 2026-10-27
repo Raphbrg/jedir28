@@ -8,3 +8,22 @@ export function parseTop(text){const entries=[];const errors=[];text.split(/\r?\
 export function audioVolume(frame,duration){const fade=Math.min(12,duration/2);return Math.max(0,Math.min(1,frame/fade,(duration-1-frame)/fade));}
 
 export function audioLevel(data,entry){return Math.max(0,Math.min(100,data.audioVolume??100))/100*Math.max(0,Math.min(100,entry.audioVolume??100))/100;}
+
+// Keep the winner's excerpt continuous into the recap, without looping short files.
+export function topAudioSegments(data){
+ const t=topTiming(data);const segments=[];
+ for(const [i,entry] of orderedEntries(data).entries()){
+  if(!entry.audio)continue;
+  const from=Math.round(t.introEnd+i*t.itemFrames);const end=Math.round(t.introEnd+(i+1)*t.itemFrames);
+  const startFrom=Math.round(entry.audioStart*TOP_FPS);const available=Math.max(0,Math.floor(entry.audioDuration*TOP_FPS)-startFrom);
+  const winnerAtEnd=entry.rank===1&&end===t.summaryStart;
+  const length=(winnerAtEnd?t.duration:end)-from;const duration=Math.min(length,available);
+  if(duration>0)segments.push({entry,from,startFrom,duration});
+  // In ascending order, resume #1 after the other entries instead of overlapping them.
+  if(entry.rank===1&&!winnerAtEnd){
+   const played=end-from;const remaining=Math.min(t.endFrames,available-played);
+   if(remaining>0)segments.push({entry,from:t.summaryStart,startFrom:startFrom+played,duration:remaining});
+  }
+ }
+ return segments;
+}
