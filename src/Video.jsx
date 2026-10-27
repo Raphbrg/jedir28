@@ -30,7 +30,7 @@ export function AlbumVideo({data}){
 }
 function Dot({score,size}){
  const label=String(score??'').trim()===''?'—':String(score).replace('.',',');
- return <span aria-label={`Note ${label} sur 10`} style={{boxSizing:'border-box',border:`${Math.round(size*.13)}px solid ${category(score).color}`,display:'inline-flex',alignItems:'center',justifyContent:'center',width:size,height:size,borderRadius:'50%',background:'#fff',color:'#111',fontSize:size*(label.length>3?.25:label.length>2?.31:.42),fontWeight:900,lineHeight:1,fontVariantNumeric:'tabular-nums',boxShadow:'0 2px 6px #0006',flexShrink:0}}>{label}</span>;
+ return <span aria-label={`Note ${label} sur 10`} style={{boxSizing:'border-box',border:'2px solid #ffffff30',display:'inline-flex',alignItems:'center',justifyContent:'center',width:size,height:size,borderRadius:'50%',background:category(score).color,color:'#111',fontSize:size*(label.length>3?.29:label.length>2?.36:.46),fontWeight:900,lineHeight:1,fontVariantNumeric:'tabular-nums',boxShadow:'0 2px 6px #0006',flexShrink:0}}>{label}</span>;
 }
 function RatingLegend(){
  return <div aria-label="Légende des notes" style={{display:'flex',justifyContent:'center',flexWrap:'wrap',gap:'12px 20px',flexShrink:0}}>{categories.map(c=><div key={c.label} style={{display:'flex',alignItems:'center',gap:8,fontSize:19,fontWeight:700,color:'#eee7f5'}}><span style={{width:14,height:14,borderRadius:'50%',background:c.color,flexShrink:0}}/>{c.label}</div>)}</div>;
