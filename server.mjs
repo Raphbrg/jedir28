@@ -1,5 +1,8 @@
 import * as http from 'node:http';
 import express from 'express';
+import {resolveNinhoTrack} from './src/ninho-resolver.mjs';
+import {ninhoCatalogue} from './src/ninho-catalogue.mjs';
+import {downloadDeezerPreview,searchDeezerPreview} from './src/deezer-preview.mjs';
 import {downloadApplePreview} from './src/apple-preview.mjs';
 import multer from 'multer';
 import {searchMusic,artistAlbums,albumTracks} from './src/music-search.mjs';
@@ -35,13 +38,22 @@ app.get('/api/music-search',async(req,res)=>{try{if(typeof req.query.q!=='string
 app.post('/api/music-preview',async(req,res)=>{
  const id=randomUUID();const file=path.join(audioDir,id);
  try{
-  const preview=await downloadApplePreview(req.body.trackId,req.body.country||'FR');
+  let provider=req.body.provider||'apple';if(!['apple','deezer'].includes(provider))throw Error('Catalogue invalide.');
+  let preview;
+  try{preview=provider==='deezer'?await downloadDeezerPreview(req.body.trackId):await downloadApplePreview(req.body.trackId,req.body.country||'FR');}
+  catch(error){
+   const selected=ninhoCatalogue.find(t=>t.id===req.body.catalogueId);
+   if(provider!=='apple'||!selected)throw error;
+   const alternative=await searchDeezerPreview(selected.title==='Somnanbule'?'Somnambule':selected.title);if(!alternative)throw error;
+   preview=await downloadDeezerPreview(alternative.deezerId);provider='deezer';
+  }
   await fs.writeFile(file,preview.buffer);const duration=await normalizeAudio(file,file+'.mp3');
-  const audio={url:'/api/audio/'+id,duration,name:preview.name,createdAt:Date.now(),source:'apple-preview',trackId:preview.trackId};
+  const audio={url:'/api/audio/'+id,duration,name:preview.name,createdAt:Date.now(),source:provider+'-preview',trackId:preview.trackId};
   await fs.writeFile(file+'.json',JSON.stringify(audio));res.json(audio);
  }catch(error){await fs.unlink(file+'.mp3').catch(()=>{});res.status(400).json({error:error.message});}
  finally{await fs.unlink(file).catch(()=>{});}
 });
+app.get('/api/ninho-track/:id',async(req,res)=>{try{res.json({track:await resolveNinhoTrack(req.params.id,req.query.region||'FR')});}catch(error){res.status(503).json({error:'Recherche audio indisponible. Le titre reste utilisable avec ton fichier audio.'});}});
 app.get('/api/music-discography',async(req,res)=>{try{res.json(await artistAlbums(req.query.artist,req.query.region||'FR'));}catch(error){res.status(503).json({error:error.message});}});
 app.get('/api/music-album/:id',async(req,res)=>{try{res.json({tracks:await albumTracks(req.params.id,req.query.country||'FR')});}catch(error){res.status(503).json({error:error.message});}});
 const jobs=new Map();let active=false;
