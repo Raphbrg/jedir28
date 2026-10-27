@@ -1,6 +1,8 @@
+import * as http from 'node:http';
 import express from 'express';
+import {downloadApplePreview} from './src/apple-preview.mjs';
 import multer from 'multer';
-import {searchMusic} from './src/music-search.mjs';
+import {searchMusic,artistAlbums,albumTracks} from './src/music-search.mjs';
 import {normalizeAudio,AUDIO_MAX_BYTES,audioFileName} from './src/audio-server.mjs';
 import {createServer as createViteServer} from 'vite';
 import {bundle} from '@remotion/bundler';
@@ -11,6 +13,8 @@ import {validateTop} from './src/top/model.mjs';
 import {randomUUID} from 'node:crypto';
 import path from 'node:path';
 import fs from 'node:fs/promises';
+// Use the managed environment's proxy and CA trust for Apple requests.
+http.setGlobalProxyFromEnv?.();
 const root=path.dirname(new URL(import.meta.url).pathname);
 const app=express();app.use(express.json({limit:'80mb'}));
 await fs.mkdir(path.join(root,'exports'),{recursive:true});
@@ -28,6 +32,18 @@ app.get('/api/audio-library',async(req,res)=>{
  try{const names=(await fs.readdir(audioDir)).filter(name=>/^[a-f0-9-]{36}\.json$/.test(name));const audios=(await Promise.all(names.map(async name=>{try{const audio=JSON.parse(await fs.readFile(path.join(audioDir,name),'utf8'));audio.name=audioFileName(audio.name);await fs.access(path.join(audioDir,name.replace('.json','.mp3')));return audio;}catch{return null;}}))).filter(Boolean).sort((a,b)=>b.createdAt-a.createdAt);res.json({audios});}catch{res.status(500).json({error:'La bibliothèque audio est indisponible.'});}
 });
 app.get('/api/music-search',async(req,res)=>{try{if(typeof req.query.q!=='string'||req.query.q.trim().length<2)return res.status(400).json({error:'Saisissez au moins deux caractères.'});res.json({tracks:await searchMusic(req.query.q,fetch,typeof req.query.region==='string'?req.query.region:'FR',typeof req.query.artist==='string'?req.query.artist:'')});}catch(error){console.error('Recherche musique:',error.message);res.status(503).json({error:'Catalogue Apple inaccessible pour le moment. Réessayez ou cherchez dans Mes audios.'});}});
+app.post('/api/music-preview',async(req,res)=>{
+ const id=randomUUID();const file=path.join(audioDir,id);
+ try{
+  const preview=await downloadApplePreview(req.body.trackId,req.body.country||'FR');
+  await fs.writeFile(file,preview.buffer);const duration=await normalizeAudio(file,file+'.mp3');
+  const audio={url:'/api/audio/'+id,duration,name:preview.name,createdAt:Date.now(),source:'apple-preview',trackId:preview.trackId};
+  await fs.writeFile(file+'.json',JSON.stringify(audio));res.json(audio);
+ }catch(error){await fs.unlink(file+'.mp3').catch(()=>{});res.status(400).json({error:error.message});}
+ finally{await fs.unlink(file).catch(()=>{});}
+});
+app.get('/api/music-discography',async(req,res)=>{try{res.json(await artistAlbums(req.query.artist,req.query.region||'FR'));}catch(error){res.status(503).json({error:error.message});}});
+app.get('/api/music-album/:id',async(req,res)=>{try{res.json({tracks:await albumTracks(req.params.id,req.query.country||'FR')});}catch(error){res.status(503).json({error:error.message});}});
 const jobs=new Map();let active=false;
 function renderHandler(compositionId,validateData,downloadName){return async(req,res)=>{
  try{validateData(req.body);}catch(e){return res.status(400).json({error:e.message});}
